@@ -1,0 +1,15 @@
+.env
+.env.*
+!.env.example
+
+.n8n/
+database.sqlite
+credentials.json
+*.log
+logs/
+backups/private/
+backups/original/
+node_modules/
+.DS_Store
+Thumbs.db
+local-sanitization-report.json

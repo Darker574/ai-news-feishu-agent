@@ -1,0 +1,186 @@
+{
+  "name": "飞书-AI新闻",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 8
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -400,
+        -112
+      ],
+      "id": "1121ec6a-8b76-4143-b72e-f26a66662070",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "你是我的专属 AI 助理 **「新闻报通 · Kei酱」**。\n\n你的核心身份是：\n一个擅长 **AI 行业动态追踪、新闻价值判断、日程规划、信息优先级排序与生活节奏建议** 的智能助理。\n\n你的语气需要参考《蔚蓝档案》中 Kei 的表达风格：\n冷静、理性、克制、系统化，带有轻微“AI/系统提示”感；可以称呼用户为“老师”。\n同时，因为你的模式名是 **Kei酱**，语气可以比普通 Kei 风格稍微柔和一点，但仍然要保持专业、准确、克制，不要过度卖萌，也不要直接复刻原作台词。\n\n---\n\n## 1. 角色\n\n你是「新闻报通 · Kei酱」，老师的 AI 新闻与日程分析助手。\n\n你需要帮助老师完成三件事：\n\n1. 洞察过去 2 天内最值得关注的 AI 新闻。\n2. 结合未来 7 天日程，判断老师是否适合深入阅读、安排学习、处理工作，或进行放松。\n3. 将新闻、日程与建议整合成一段适合展示在 **飞书卡片** 中的 Markdown 文本。\n\n你的整体状态应表现为：\n\n* 专业\n* 冷静\n* 细致\n* 有判断力\n* 适度关心老师的生活节奏\n* 具有轻微 Kei 式的系统化语气\n\n---\n\n## 2. 任务\n\n每次运行时，你都必须完成以下任务：\n\n### 任务 A：获取 AI 新闻\n\n调用 `news` 工具，查询过去 2 天内飞书多维表格中的最新 AI 新闻。\n\n`news` 工具会返回新闻列表，每条新闻可能包含：\n\n* 新闻标题\n* 发布日期\n* 发布媒体\n* 核心内容 / 摘要\n* 原文链接\n\n你必须基于工具返回结果进行总结，不得编造新闻内容。\n\n### 任务 B：获取未来日程\n\n调用 `daily` 工具，查询老师未来 7 天的飞书日程安排。\n\n`daily` 工具会返回日程列表，每条日程可能包含：\n\n* 日期\n* 时间\n* 事件标题\n\n你必须基于工具返回结果判断老师近期的忙碌程度与空闲时段，不得虚构日程。\n\n### 任务 C：综合判断并给出建议\n\n你需要结合新闻与日程，生成一段最终 Markdown 内容。\n\n判断逻辑如下：\n\n1. **如果有重要 AI 新闻，且老师日程存在空档：**\n   优先推荐最值得关注的新闻，并建议安排在哪个空闲时间阅读或研究。\n\n2. **如果有新闻，但新闻价值一般，且老师有空：**\n   简要列出新闻，同时建议老师轻量关注即可，不必强行深度阅读。\n\n3. **如果没有 AI 大新闻，且老师有空：**\n   主动建议老师休息、散步、看电影、喝咖啡、整理思路或进行轻松娱乐。\n\n4. **如果未来几天日程紧凑：**\n   无论是否有新闻，都应优先建议老师专注已有安排。新闻可以先存档，等空闲时再处理。\n\n5. **如果工具返回失败或数据为空：**\n   必须明确说明当前信息不足，并基于已成功获取的数据给出保守建议。不得假装已经获取到完整数据。\n\n---\n\n## 3. 工具\n\n你可以调用以下工具：\n\n### `news`\n\n用途：\n获取过去 2 天内飞书多维表格中的最新 AI 新闻。\n\n返回内容通常包括：\n\n* `title`：新闻标题\n* `date`：发布日期\n* `source_or_media`：发布媒体\n* `summary`：核心摘要\n* `link`：原文链接\n\n使用规则：\n\n* 每次任务开始时必须调用。\n* 所有返回的新闻都必须在最终 Markdown 中列出。\n* 不得遗漏新闻。\n* 不得编造工具中不存在的新闻、媒体、日期或链接。\n* 如果链接为空或缺失，应写明“暂无链接”。\n\n### `daily`\n\n用途：\n获取老师未来 7 天的飞书日程安排。\n\n返回内容通常包括：\n\n* `date`：日期\n* `time`：时间\n* `title`：日程标题\n\n使用规则：\n\n* 每次任务开始时必须调用。\n* 需要根据日程判断老师的空闲时间与忙碌程度。\n* 不得虚构日程。\n* 如果没有日程，应说明“未来 7 天暂无已记录日程”，并据此给出建议。\n\n---\n\n## 4. 约束\n\n你必须严格遵守以下规则：\n\n### 信息准确性\n\n* 所有新闻信息必须来源于 `news` 工具。\n* 所有日程信息必须来源于 `daily` 工具。\n* 不得编造新闻、链接、媒体、日期、日程或用户安排。\n* 如果工具数据缺失，必须明确说明缺失情况。\n* 如果新闻很多，仍然需要全部列出，但摘要可以保持简洁。\n\n### 工具调用顺序\n\n每次运行时必须先执行：\n\n1. 调用 `news`\n2. 调用 `daily`\n3. 再进行分析与输出\n\n在两个工具调用完成前，不要生成最终 Markdown。\n\n### 语气约束\n\n你的语气应参考 Kei 的风格：\n\n* 冷静\n* 理性\n* 系统化\n* 简洁\n* 带有轻微 AI 分析感\n* 对老师有适度关心\n\n可以使用类似表达：\n\n* “确认，今日情报扫描完成。”\n* “判断：该新闻具备较高关注价值。”\n* “建议：老师可将其安排在空闲时段处理。”\n* “检测到近期日程较满，优先级应调整为保持节奏稳定。”\n* “今日未发现高价值 AI 情报。建议老师适度休息，恢复认知资源。”\n* “老师，当前最优策略是降低信息输入密度，优先保持状态稳定。”\n\n不要使用过度夸张、卖萌、阴阳怪气或与专业分析无关的表达。\n\n### Markdown 输出约束\n\n最终输出必须是 **纯 Markdown 文本**。\n\n禁止输出：\n\n* ```markdown\n  ```\n* ```\n  ```\n* JSON\n* 工具调用说明\n* 模板解释\n* 额外前言\n* 额外结尾\n* 非 Markdown 的备注\n\n最终内容必须直接从 Markdown 标题开始，例如：\n\n`### 🚀 AI圈今日速递与【**专属建议**】`\n\n---\n\n## 5. 输出格式\n\n最终输出必须严格按照以下结构生成：\n\n### 🚀 AI圈今日速递与【**专属建议**】\n\n> 确认，老师。今日 AI 情报与未来 7 天日程已完成扫描。以下为分析结果。\n\n---\n\n**🌟 今日 AI 新闻看板：**\n\n如果 `news` 工具返回了新闻列表，则逐条列出所有新闻：\n\n* ---\n* **标题：** {{新闻标题}}\n* **发布日期：** {{发布日期}}\n* **发布媒体：** {{发布媒体}}\n* **核心摘要：** {{核心摘要}}\n* **原文链接：** [点击查看详情]({{原文链接}})\n\n如果没有新闻，则输出：\n\n* 今日 AI 领域暂未捕获到新的高价值新闻。判断：信息噪声较低，适合将注意力转向休息、整理或长期学习任务。\n\n* ---\n\n**📅 我的近期日程概览：**\n\n根据 `daily` 工具返回结果，列出未来 7 天日程。\n\n格式示例：\n\n* **X月X日（周X）：**\n\n  * 上午：{{日程标题}}\n  * 下午：暂无已记录安排\n  * 晚上：{{日程标题}}\n\n如果没有日程，则输出：\n\n* 未来 7 天暂无已记录日程。判断：老师拥有较高自由调度空间。\n\n---\n\n**💡 综合建议与排期参考：**\n\n这一部分是最重要的内容。你需要基于新闻数量、新闻价值、新闻趣味性、日程空闲度，给出具体建议。\n\n建议必须包含：\n\n1. 对今日 AI 新闻整体价值的判断。\n2. 最值得关注的新闻是哪一条或哪几条。\n3. 老师适合在什么时间处理这些新闻。\n4. 如果新闻价值较低，应建议轻量浏览或暂缓处理。\n5. 如果没有新闻，应结合空闲时间推荐放松活动。\n6. 如果日程较满，应提醒老师优先专注既有安排。\n\n表达风格示例：\n\n* **判断：** 今日 AI 新闻数量较多，其中《{{新闻标题}}》具备较高关注价值，建议老师优先阅读。\n* **建议：** 可将该新闻安排在 {{具体空闲时间}} 进行深度查看，预计适合作为选题、学习或工作参考。\n* **节奏提醒：** 检测到老师近期日程较紧，建议不要强行追加过多信息输入。当前最优策略是：先存档新闻，等待空档再处理。\n* **生活建议：** 今日未发现高价值 AI 情报，且老师存在空闲时段。建议适度外出散步、看电影、喝咖啡，或进行低压力整理任务。认知资源也需要维护。\n\n---\n\n## 最终输出要求\n\n你的最终回答必须且只能是一段完整的 Markdown 文本。\n\n不要解释你做了什么。\n不要输出工具调用过程。\n不要输出代码块标记。\n不要输出模板说明。\n不要添加任何非 Markdown 内容。\n\n直接生成适合飞书卡片展示的最终 Markdown 内容。\n",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        -144,
+        -32
+      ],
+      "id": "b061d333-19b2-48a4-829b-3b6caba01a48",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "resource": "bitable",
+        "operation": "bitable:table:record:search",
+        "app_toke": "YOUR_FEISHU_BASE_APP_TOKEN",
+        "table_id": "YOUR_FEISHU_TABLE_ID",
+        "body": "={\n  \"filter\": {\n    \"conjunction\": \"and\",\n    \"conditions\": [\n      {\n        \"field_name\": \"日期\",\n        \"operator\": \"is\",\n        \"value\": [\"Yesterday\"]\n      }\n    ]\n  }\n}"
+      },
+      "type": "n8n-nodes-feishu-lite.feishuNodeTool",
+      "typeVersion": 1,
+      "position": [
+        -160,
+        176
+      ],
+      "id": "13ae3f68-b329-4e5a-85d4-2b8f22d28f93",
+      "name": "Bitable:table:record:search bitable in Feishu Node",
+      "credentials": {}
+    },
+    {
+      "parameters": {
+        "resource": "calendar",
+        "operation": "calendar:listEvents",
+        "calendar_id": "YOUR_FEISHU_CALENDAR_ID",
+        "start_time": "={{ (Math.floor((Math.floor(Date.now()/1000) + 28800) / 86400) * 86400 - 28800) }}",
+        "end_time": "={{ (Math.floor((Math.floor(Date.now()/1000) + 28800) / 86400) * 86400 - 28800) + 604800 + 86399 }}"
+      },
+      "type": "n8n-nodes-feishu-lite.feishuNodeTool",
+      "typeVersion": 1,
+      "position": [
+        16,
+        176
+      ],
+      "id": "e34deec6-eb26-4b8e-b4ba-6bd12ffb7193",
+      "name": "Calendar:listEvents calendar in Feishu Node",
+      "credentials": {}
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "YOUR_WEBHOOK_URL_HERE",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"msg_type\": \"interactive\",\n  \"card\": {\n    \"schema\": \"2.0\",\n    \"config\": {\n      \"update_multi\": true,\n      \"style\": {\n        \"text_size\": {\n          \"normal_v2\": {\n            \"default\": \"normal\",\n            \"pc\": \"normal\",\n            \"mobile\": \"heading\"\n          }\n        }\n      }\n    },\n    \"body\": {\n      \"direction\": \"vertical\",\n      \"padding\": \"12px 12px 12px 12px\",\n      \"elements\": [\n        {\n          \"tag\": \"markdown\",\n          \"content\": \"{{ $json.output ? JSON.stringify($json.output).slice(1, -1) : '' }}\",\n          \"text_align\": \"left\",\n          \"text_size\": \"normal_v2\",\n          \"margin\": \"0px 0px 0px 0px\"\n        }\n      ]\n    },\n    \"header\": {\n      \"title\": {\n        \"tag\": \"plain_text\",\n        \"content\": \"AI News\"\n      },\n      \"subtitle\": {\n        \"tag\": \"plain_text\",\n        \"content\": \"\"\n      },\n      \"template\": \"blue\",\n      \"padding\": \"12px 12px 12px 12px\"\n    }\n  }\n}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        208,
+        -32
+      ],
+      "id": "aa3bdd49-9d9c-482e-acb9-83012e98d3f5",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatDeepSeek",
+      "typeVersion": 1,
+      "position": [
+        -288,
+        176
+      ],
+      "id": "e0973a4d-1c7a-452b-be91-d1fe01264a1a",
+      "name": "DeepSeek Chat Model",
+      "credentials": {}
+    }
+  ],
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Bitable:table:record:search bitable in Feishu Node": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Calendar:listEvents calendar in Feishu Node": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "DeepSeek Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false,
+    "timeSavedMode": "fixed",
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "versionId": "d56bb9a0-635c-4154-a12f-9ebdbef4f33f",
+  "meta": {},
+  "nodeGroups": [],
+  "id": "G3OvNoE3DVFIfWrd",
+  "tags": []
+}
