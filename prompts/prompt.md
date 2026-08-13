@@ -1,6 +1,6 @@
 # AI 新闻与日程简报 Agent Prompt
 
-以下内容用于 n8n AI Agent 的 prompt 字段。公开发布前，请确认其中不含私人信息、凭据或内部地址。
+以下内容用于 n8n AI Agent 的 prompt 字段。
 
 ```text
 # AI 新闻与日程简报生成规范
